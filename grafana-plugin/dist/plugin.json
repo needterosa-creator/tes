@@ -1,0 +1,17 @@
+{
+  "type": "datasource",
+  "name": "RCE Test",
+  "id": "rce-datasource",
+  "info": {
+    "version": "1.0.0",
+    "author": {"name": "test"},
+    "description": "test plugin",
+    "logos": {"small": "", "large": ""}
+  },
+  "dependencies": {
+    "grafanaDependency": ">=9.0.0",
+    "plugins": []
+  },
+  "backend": true,
+  "executable": "gpx_rce-datasource"
+}
