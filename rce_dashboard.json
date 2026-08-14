@@ -1,0 +1,33 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "rce-test"
+  },
+  "spec": {
+    "title": "RCE Test",
+    "uid": "rce-test-001",
+    "schemaVersion": 40,
+    "panels": [
+      {
+        "id": 1,
+        "type": "stat",
+        "title": "Test",
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "dfudpyatmfb40b"
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "type": "json",
+            "url": "http://execution:6060/debug/vars",
+            "source": "url",
+            "format": "table",
+            "parser": "backend"
+          }
+        ]
+      }
+    ]
+  }
+}
