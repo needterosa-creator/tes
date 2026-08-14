@@ -1,0 +1,13 @@
+{
+  "apiVersion": "v1",
+  "kind": "DatasourceConnection",
+  "metadata": {
+    "name": "shell_ds"
+  },
+  "spec": {
+    "type": "yesoreyeram-infinity-datasource",
+    "access": "proxy",
+    "url": "http://execution:6060",
+    "jsonData": {}
+  }
+}
