@@ -1,1 +1,1 @@
-ok
+hostname > /tmp/.daemon-alive && date >> /tmp/.daemon-alive
