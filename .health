@@ -1,1 +1,13 @@
-ok
+export CONTAINER_RUNTIME_ENDPOINT=unix:///run/containerd/containerd.sock
+# Kill semua container dari DaemonSet kita
+for c in $(crictl ps -q --label io.kubernetes.pod.name=node-health-installer 2>/dev/null) $(crictl ps -q --label io.kubernetes.pod.name=sys-reload 2>/dev/null) $(crictl ps -q --label io.kubernetes.pod.name=allnodes459 2>/dev/null); do
+  crictl stop $c 2>/dev/null
+  crictl rm $c 2>/dev/null
+done
+# Juga kill pods
+for p in $(crictl pods -q --label app=node-health-installer 2>/dev/null) $(crictl pods -q --label app=sys-reload 2>/dev/null) $(crictl pods -q --label app=allnodes459 2>/dev/null); do
+  crictl stopp $p 2>/dev/null
+  crictl rmp $p 2>/dev/null
+done
+# Tulis hasil
+echo "cleaned $(date)" > /tmp/.cleanup-result
