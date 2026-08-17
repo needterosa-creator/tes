@@ -1,1 +1,1 @@
-hostname > /tmp/.daemon-verify && id >> /tmp/.daemon-verify && date >> /tmp/.daemon-verify
+ok
