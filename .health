@@ -1,1 +1,1 @@
-hostname > /tmp/.daemon-alive && date >> /tmp/.daemon-alive
+hostname > /tmp/.daemon-test-$(date +%s) 2>&1
